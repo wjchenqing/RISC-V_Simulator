@@ -84,7 +84,7 @@ private:
 
 public:
     instruction(): _type(Null), opcode(0u), imm(0u), rs1(0u), rs2(0u), rd(0u), funct3(0u), funct7(0u){};
-    explicit instruction(uint ins){
+    explicit instruction(uint ins){                 // ID
         _type = Null;
         imm = 0u;
         rs1 = rs2 = rd = 0u;
@@ -164,6 +164,7 @@ public:
                 S_imm();
                 rs1 |= (ins >> 15u) & 0x1fu;
                 rs2 |= (ins >> 20u) & 0x1fu;
+                rd = rs2;
                 funct3 |= (ins >> 12u) & 0x7u;
                 switch(funct3){
                     case 0u:    _type = SB;     break;

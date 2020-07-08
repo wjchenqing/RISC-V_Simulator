@@ -13,6 +13,5 @@ typedef unsigned char uchar;
 
 uchar _memory[2333333];
 uint _register[32];
-uint pc;
 
 #endif //RISC_V_SIMULATOR_VARIATE_HPP
