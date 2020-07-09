@@ -5,24 +5,24 @@
 #ifndef RISC_V_SIMULATOR_INSTRUCTION_HPP
 #define RISC_V_SIMULATOR_INSTRUCTION_HPP
 
-#include "variate.hpp"
+#include "variate.h"
 
 enum ins_type{
     Null,
     //Integer Computational Instructions
-    ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI,   ///I
+            ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI,   ///I
     ADD, SUB, SLT, SLTU, XOR, SLL, SRL, SRA, OR, AND,       ///R
     LUI, AUIPC,                                             ///U
 
     //Unconditional Jump
-    JAL,                                                    ///J
+            JAL,                                                    ///J
     JALR,                                                   ///I
 
     //Conditional branch
-    BEQ, BNE, BLT, BLTU, BGE, BGEU,                         ///B
+            BEQ, BNE, BLT, BLTU, BGE, BGEU,                         ///B
 
     //Load And Store
-    LB, LBU, LH, LHU, LW,                                   ///I
+            LB, LBU, LH, LHU, LW,                                   ///I
     SB, SH, SW,                                             ///S
 
     /*  1.ADDI  2.SLTI  3.SLTIU 4.XORI  5.ORI   6.ANDI  7.SLLI
@@ -198,4 +198,4 @@ public:
 
     };
 
-#endif //RISC_V_SIMULATOR_INSTRUCTION_HPP
+#endif // RISC_V_SIMULATOR_INSTRUCTION_HPP
