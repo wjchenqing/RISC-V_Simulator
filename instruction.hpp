@@ -10,19 +10,19 @@
 enum ins_type{
     Null,
     //Integer Computational Instructions
-            ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI,   ///I
+    ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI,   ///I
     ADD, SUB, SLT, SLTU, XOR, SLL, SRL, SRA, OR, AND,       ///R
     LUI, AUIPC,                                             ///U
 
     //Unconditional Jump
-            JAL,                                                    ///J
+    JAL,                                                    ///J
     JALR,                                                   ///I
 
     //Conditional branch
-            BEQ, BNE, BLT, BLTU, BGE, BGEU,                         ///B
+    BEQ, BNE, BLT, BLTU, BGE, BGEU,                         ///B
 
     //Load And Store
-            LB, LBU, LH, LHU, LW,                                   ///I
+    LB, LBU, LH, LHU, LW,                                   ///I
     SB, SH, SW,                                             ///S
 
     /*  1.ADDI  2.SLTI  3.SLTIU 4.XORI  5.ORI   6.ANDI  7.SLLI
@@ -94,7 +94,7 @@ public:
         switch (opcode){
             case 0x13:
                 I_imm();
-                rd |= (ins >> 7u) & 0x7fu;
+                rd |= (ins >> 7u) & 0x1fu;
                 rs1 |= (ins >> 15u) & 0x1fu;
                 funct3 |= (ins >> 12u) & 0x7u;
                 switch (funct3){
@@ -112,7 +112,7 @@ public:
                         }   break;
                 }   break;
             case 0x33:
-                rd |= (ins >> 7u) & 0x7fu;
+                rd |= (ins >> 7u) & 0x1fu;
                 rs1 |= (ins >> 15u) & 0x1fu;
                 rs2 |= (ins >> 20u) & 0x1fu;
                 funct3 |= (ins >> 12u) & 0x7u;
@@ -137,8 +137,8 @@ public:
                 }   break;
             case 0x63:
                 B_imm();
-                rs1 |= (ins >> 15u) & 0x1fu;
-                rs2 |= (ins >> 20u) & 0x1fu;
+                rs1 |= (ins >> 15u) & 31u;
+                rs2 |= (ins >> 20u) & 31u;
                 funct3 |= (ins >> 12u) & 0x7u;
                 switch(funct3){
                     case 0u:    _type = BEQ;    break;
@@ -150,8 +150,8 @@ public:
                 }   break;
             case 0x3:
                 I_imm();
-                rd |= (ins >> 7u) & 0x7fu;
-                rs1 |= (ins >> 15u) & 0x1fu;
+                rd |= (ins >> 7u) & 31u;
+                rs1 |= (ins >> 15u) & 31u;
                 funct3 |= (ins >> 12u) & 0x7u;
                 switch(funct3){
                     case 0u:    _type = LB;     break;
@@ -162,8 +162,8 @@ public:
                 }   break;
             case 0x23:
                 S_imm();
-                rs1 |= (ins >> 15u) & 0x1fu;
-                rs2 |= (ins >> 20u) & 0x1fu;
+                rs1 |= (ins >> 15u) & 31u;
+                rs2 |= (ins >> 20u) & 31u;
                 rd = rs2;
                 funct3 |= (ins >> 12u) & 0x7u;
                 switch(funct3){
@@ -173,23 +173,23 @@ public:
                 }   break;
             case 0x37:
                 U_imm();
-                rd |= (ins >> 7u) & 0x7fu;
+                rd |= (ins >> 7u) & 31u;
                 _type = LUI;
                 break;
             case 0x17:
                 U_imm();
-                rd |= (ins >> 7u) & 0x7fu;
+                rd |= (ins >> 7u) & 31u;
                 _type = AUIPC;
                 break;
             case 0x6f:
                 J_imm();
-                rd |= (ins >> 7u) & 0x7fu;
+                rd |= (ins >> 7u) & 31u;
                 _type = JAL;
                 break;
             case 0x67:
                 I_imm();
-                rd |= (ins >> 7u) & 0x7fu;
-                rs1 |= (ins >> 15u) & 0x1fu;
+                rd |= (ins >> 7u) & 31u;
+                rs1 |= (ins >> 15u) & 31u;
                 funct3 |= (ins >> 12u) & 0x7u;
                 _type = JALR;
                 break;

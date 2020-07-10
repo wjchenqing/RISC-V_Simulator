@@ -17,8 +17,8 @@ void _IF::op(_ID *_id){
     occupied = false;
     uint tmp = 0u;
     tmp |= ((((uint)_memory[pc]) << 24u) | (((uint)_memory[pc + 1]) << 16u) | (((uint)_memory[pc + 2]) << 8u) | ((uint)_memory[pc + 3]));
-    if(tmp == 0x0ff00513u) return;
     _id->ins = tmp;
+    if(tmp == 0x0ff00513u) return;_id->ins = tmp;
     _id->pc = pc;
     _id->occupied = true;
 }
@@ -87,8 +87,8 @@ void _EX::op(_MEM *_mem){
         case AND: _mem->rd_val = rs1_val & rs2_val; break;
         case LUI: _mem->rd_val = imm; break;
         case AUIPC: _mem->rd_val = imm + pc; break;
-        case JAL: _mem->rd_val = pc + 4; pc += imm; break;
-        case JALR: _mem->rd_val = pc + 4; pc = (rs1_val + imm) & (-2u); break;
+        case JAL: _mem->rd_val = pc + 4; _mem->pc += imm; break;
+        case JALR: _mem->rd_val = pc + 4; _mem->pc = (rs1_val + imm) & (-2u); break;
         case BEQ: pc = (rs1_val == rs2_val) ? (pc + imm) & (-2u) : pc + 4; break;
         case BNE: pc = (rs1_val != rs2_val) ? (pc + imm) & (-2u) : pc + 4; break;
         case BLT: pc = ((int)rs1_val < (int)rs2_val) ? (pc + imm) & (-2u) : pc + 4; break;

@@ -8,7 +8,7 @@
 typedef unsigned int uint;
 typedef unsigned char uchar;
 
-extern uchar _memory[100000];
+extern uchar _memory[100000000];
 extern uint _register[32];
 extern bool reg_occupied[32];
 

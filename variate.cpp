@@ -4,6 +4,6 @@
 
 #include "variate.h"
 
-uchar _memory[100000];
+uchar _memory[100000000];
 uint _register[32];
 bool reg_occupied[32];
