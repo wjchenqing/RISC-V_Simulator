@@ -87,14 +87,14 @@ void _EX::op(_MEM *_mem){
         case AND: _mem->rd_val = rs1_val & rs2_val; break;
         case LUI: _mem->rd_val = imm; break;
         case AUIPC: _mem->rd_val = imm + pc; break;
-        case JAL: _mem->rd_val = pc + 4; _mem->pc += imm; break;
-        case JALR: _mem->rd_val = pc + 4; _mem->pc = (rs1_val + imm) & (-2u); break;
-        case BEQ: _mem->pc = (rs1_val == rs2_val) ? (pc + imm) & (-2u) : pc + 4; break;
-        case BNE: _mem->pc = (rs1_val != rs2_val) ? (pc + imm) & (-2u) : pc + 4; break;
-        case BLT: _mem->pc = ((int)rs1_val < (int)rs2_val) ? (pc + imm) & (-2u) : pc + 4; break;
-        case BLTU: _mem->pc = (rs1_val < rs2_val) ? (pc + imm) & (-2u) : pc + 4; break;
-        case BGE: _mem->pc = ((int)rs1_val > (int)rs2_val) ? (pc + imm) & (-2u) : pc + 4; break;
-        case BGEU: _mem->pc = (rs1_val > rs2_val) ? (pc + imm) & (-2u) : pc + 4; break;
+        case JAL: _mem->rd_val = pc + 4; _mem->pc += (int)imm; break;
+        case JALR: _mem->rd_val = pc + 4; _mem->pc = (rs1_val + (int)imm) & (-2u); break;
+        case BEQ: _mem->pc = (rs1_val == rs2_val) ? (pc + (int)imm) & (-2u) : pc + 4; break;
+        case BNE: _mem->pc = (rs1_val != rs2_val) ? (pc + (int)imm) & (-2u) : pc + 4; break;
+        case BLT: _mem->pc = ((int)rs1_val < (int)rs2_val) ? (pc + (int)imm) & (-2u) : pc + 4; break;
+        case BLTU: _mem->pc = (rs1_val < rs2_val) ? (pc + (int)imm) & (-2u) : pc + 4; break;
+        case BGE: _mem->pc = ((int)rs1_val > (int)rs2_val) ? (pc + (int)imm) & (-2u) : pc + 4; break;
+        case BGEU: _mem->pc = (rs1_val > rs2_val) ? (pc + (int)imm) & (-2u) : pc + 4; break;
         case LB: _mem->address = rs1_val + imm; break;
         case LBU: case LH: case LHU: case LW:
             _mem->address = rs1_val + imm; break;

@@ -164,7 +164,7 @@ public:
                 S_imm();
                 rs1 |= (ins >> 15u) & 31u;
                 rs2 |= (ins >> 20u) & 31u;
-                rd = rs2;
+//                rd = rs2;
                 funct3 |= (ins >> 12u) & 0x7u;
                 switch(funct3){
                     case 0u:    _type = SB;     break;

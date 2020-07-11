@@ -6,6 +6,7 @@
 #include "stage.h"
 
 int main(){
+    freopen("../riscv-testcases/testcases/manyarguments.data", "r", stdin);
     char ini[10] = {0};
     int cur_mem = 0;
     while(scanf("%s", ini) != EOF){
