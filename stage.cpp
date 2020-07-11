@@ -22,7 +22,7 @@ void _IF::op(_ID *_id){
     _id->pc = pc;
     _id->occupied = true;
 }
-// What is the difference between stage。cpp and stage。hpp？  定義和實現
+
 void _ID::op(_EX *_ex){
     if(_ex->occupied || !occupied) return;
     instruction cur(ins);
@@ -89,12 +89,12 @@ void _EX::op(_MEM *_mem){
         case AUIPC: _mem->rd_val = imm + pc; break;
         case JAL: _mem->rd_val = pc + 4; _mem->pc += imm; break;
         case JALR: _mem->rd_val = pc + 4; _mem->pc = (rs1_val + imm) & (-2u); break;
-        case BEQ: pc = (rs1_val == rs2_val) ? (pc + imm) & (-2u) : pc + 4; break;
-        case BNE: pc = (rs1_val != rs2_val) ? (pc + imm) & (-2u) : pc + 4; break;
-        case BLT: pc = ((int)rs1_val < (int)rs2_val) ? (pc + imm) & (-2u) : pc + 4; break;
-        case BLTU: pc = (rs1_val < rs2_val) ? (pc + imm) & (-2u) : pc + 4; break;
-        case BGE: pc = ((int)rs1_val > (int)rs2_val) ? (pc + imm) & (-2u) : pc + 4; break;
-        case BGEU: pc = (rs1_val > rs2_val) ? (pc + imm) & (-2u) : pc + 4; break;
+        case BEQ: _mem->pc = (rs1_val == rs2_val) ? (pc + imm) & (-2u) : pc + 4; break;
+        case BNE: _mem->pc = (rs1_val != rs2_val) ? (pc + imm) & (-2u) : pc + 4; break;
+        case BLT: _mem->pc = ((int)rs1_val < (int)rs2_val) ? (pc + imm) & (-2u) : pc + 4; break;
+        case BLTU: _mem->pc = (rs1_val < rs2_val) ? (pc + imm) & (-2u) : pc + 4; break;
+        case BGE: _mem->pc = ((int)rs1_val > (int)rs2_val) ? (pc + imm) & (-2u) : pc + 4; break;
+        case BGEU: _mem->pc = (rs1_val > rs2_val) ? (pc + imm) & (-2u) : pc + 4; break;
         case LB: _mem->address = rs1_val + imm; break;
         case LBU: case LH: case LHU: case LW:
             _mem->address = rs1_val + imm; break;
@@ -176,6 +176,7 @@ void _MEM::op(_IF *_if, _WB *_wb){
 void _WB::op(){
     occupied = false;
     reg_occupied[rd] = false;
+    if(rd == 0) return;
     switch (type){
         case Null: break;
         case ADDI: case SLTI: case SLTIU: case XORI: case ORI: case ANDI: case SLLI: case SRLI: case SRAI:

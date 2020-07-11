@@ -65,9 +65,9 @@ private:
         imm = 0u;
         if((cur_ins >> 31u) == 1u)
             imm |= 0xfffff000u;
-        imm |= (cur_ins << 5u) & 0x8000u;
-        imm |= (cur_ins >> 7u) & 0x1eu;
-        imm |= (cur_ins >> 20u) & 0x7e0u;
+        imm |= ((cur_ins << 4u) & 0x800u);
+        imm |= ((cur_ins >> 7u) & 0x1eu);
+        imm |= ((cur_ins >> 20u) & 0x7e0u);
     }
     void U_imm(){
         imm = 0u;

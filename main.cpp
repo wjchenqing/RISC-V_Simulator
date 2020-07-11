@@ -26,7 +26,9 @@ int main(){
     }
     IF.pc = 0u;
     IF.occupied = true;
+    int cnt = 0;
     while (ID.ins != 0x0ff00513 || IF.occupied || ID.occupied || EX.occupied || MEM.occupied || WB.occupied){
+        ++cnt;
         IF.op(&ID);
         ID.op(&EX);
         EX.op(&MEM);
