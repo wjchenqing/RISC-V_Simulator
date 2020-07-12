@@ -6,7 +6,7 @@
 #include "stage.h"
 
 int main(){
-    freopen("../riscv-testcases/testcases/manyarguments.data", "r", stdin);
+    freopen("../riscv-testcases/testcases/array_test2.data", "r", stdin);
     char ini[10] = {0};
     int cur_mem = 0;
     while(scanf("%s", ini) != EOF){
@@ -15,14 +15,13 @@ int main(){
         } else{
             int tmp;
             sscanf(ini, "%x", &tmp);
-            _memory[cur_mem+3] = (uint) tmp;
+            _memory[cur_mem++] = (uint) tmp;
             scanf("%x", &tmp);
-            _memory[cur_mem+2] = (uint) tmp;
+            _memory[cur_mem++] = (uint) tmp;
             scanf("%x", &tmp);
-            _memory[cur_mem+1] = (uint) tmp;
+            _memory[cur_mem++] = (uint) tmp;
             scanf("%x", &tmp);
-            _memory[cur_mem] = (uint) tmp;
-            cur_mem += 4;
+            _memory[cur_mem++] = (uint) tmp;
         }
     }
     IF.pc = 0u;

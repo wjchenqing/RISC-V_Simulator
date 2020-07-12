@@ -16,7 +16,7 @@ void _IF::op(_ID *_id){
     if(_id->occupied || !occupied) return;
     occupied = false;
     uint tmp = 0u;
-    tmp |= ((((uint)_memory[pc]) << 24u) | (((uint)_memory[pc + 1]) << 16u) | (((uint)_memory[pc + 2]) << 8u) | ((uint)_memory[pc + 3]));
+    tmp |= ((((uint)_memory[pc+3]) << 24u) | (((uint)_memory[pc+2]) << 16u) | (((uint)_memory[pc+1]) << 8u) | ((uint)_memory[pc]));
     _id->ins = tmp;
     if(tmp == 0x0ff00513u) return;_id->ins = tmp;
     _id->pc = pc;
