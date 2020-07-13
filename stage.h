@@ -56,15 +56,14 @@ public:
 class _MEM{
 public:
     bool occupied;
-    uint pc;
     ins_type type;
     uint address;
     uint val;
     uint rd_val;
     uint rd;
 public:
-    _MEM(): pc(0u), type(Null), address(0u), val(0u), rd_val(0u), rd(0u), occupied(false) {}
-    void op(_IF *_if, _WB *_wb);
+    _MEM(): type(Null), address(0u), val(0u), rd_val(0u), rd(0u), occupied(false) {}
+    void op(_WB *_wb);
 };
 
 class _WB{

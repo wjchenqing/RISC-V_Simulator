@@ -12,4 +12,6 @@ extern uchar _memory[100000000];
 extern uint _register[32];
 extern bool reg_occupied[32];
 
+extern uint PC;
+
 #endif //RISC_V_SIMULATOR_VARIATE_H

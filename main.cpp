@@ -27,13 +27,17 @@ int main(){
     IF.pc = 0u;
     IF.occupied = true;
     int cnt = 0;
-    while (ID.ins != 0x0ff00513 || IF.occupied || ID.occupied || EX.occupied || MEM.occupied || WB.occupied){
+    while (!(ID.ins == 0x0ff00513 && !IF.occupied && !ID.occupied && !EX.occupied && !MEM.occupied && !WB.occupied)){
         ++cnt;
-        IF.op(&ID);
-        ID.op(&EX);
-        EX.op(&MEM);
-        MEM.op(&IF, &WB);
+//        IF.op(&ID);
+//        ID.op(&EX);
+//        EX.op(&MEM);
+//        MEM.op(&WB);
         WB.op();
+        MEM.op(&WB);
+        EX.op(&MEM);
+        ID.op(&EX);
+        IF.op(&ID);
     }
     printf("%u\n", _register[10] & 255u);
     return 0;
