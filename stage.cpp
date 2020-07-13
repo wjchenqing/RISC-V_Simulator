@@ -82,9 +82,9 @@ void _EX::op(_MEM *_mem){
         case SLT: _mem->rd_val = ((int)rs1_val < (int)rs2_val); break;
         case SLTU: _mem->rd_val = (rs1_val < rs2_val); break;
         case XOR: _mem->rd_val = rs1_val ^ rs2_val; break;
-        case SLL: _mem->rd_val = rs1_val << (rs2_val & 31u); break;
-        case SRL: _mem->rd_val = rs1_val >> (rs2_val & 31u); break;
-        case SRA: _mem->rd_val = (int)(rs1_val) >> (rs2_val & 31u); break;
+        case SLL: _mem->rd_val = rs1_val << rs2_val; break;
+        case SRL: _mem->rd_val = rs1_val >> rs2_val; break;
+        case SRA: _mem->rd_val = (int)(rs1_val) >> rs2_val; break;
         case OR: _mem->rd_val = rs1_val | rs2_val; break;
         case AND: _mem->rd_val = rs1_val & rs2_val; break;
         case LUI: _mem->rd_val = imm; break;
