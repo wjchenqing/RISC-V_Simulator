@@ -14,8 +14,7 @@ _WB WB;
 
 void _IF::op(_ID *_id){
     if(_id->occupied || !occupied) return;
-    pc = PC;
-    PC += 4;
+    _id->pc = pc;
     uint tmp = 0u;
     tmp |= ((((uint)_memory[pc+3]) << 24u) | (((uint)_memory[pc+2]) << 16u) | (((uint)_memory[pc+1]) << 8u) | ((uint)_memory[pc]));
     _id->ins = tmp;
@@ -23,7 +22,7 @@ void _IF::op(_ID *_id){
         occupied = false;
         return;
     }
-    _id->pc = pc;
+    pc += 4;
     _id->occupied = true;
 }
 
@@ -32,7 +31,7 @@ void _ID::op(_EX *_ex){
     instruction cur(ins);
     if(cur.rs1 != 0u && reg_occupied[cur.rs1]) return;
     if(cur.rs2 != 0u && reg_occupied[cur.rs2]) return;
-    if(cur.rd != 0u) reg_occupied[cur.rd] = true;
+    if(cur.rd != 0u) reg_occupied[cur.rd]++;
     _ex->type = cur._type;
     _ex->pc = pc;
     _ex->occupied = true; occupied = false;
@@ -68,6 +67,7 @@ void _EX::op(_MEM *_mem){
     occupied = false;
     _mem->type = type;
     _mem->rd = rd;
+    _mem->pc = pc;
     _mem->occupied = true;
     switch (type){
         case Null: break;
@@ -92,14 +92,14 @@ void _EX::op(_MEM *_mem){
         case AND: _mem->rd_val = rs1_val & rs2_val; break;
         case LUI: _mem->rd_val = imm; break;
         case AUIPC: _mem->rd_val = imm + pc; break;
-        case JAL: _mem->rd_val = pc + 4; PC = pc + (int)imm; IF.occupied = true; break;
-        case JALR: _mem->rd_val = pc + 4; PC = (rs1_val + (int)imm) & (-2u); IF.occupied = true; break;
-        case BEQ: PC = (rs1_val == rs2_val) ? (pc + (int)imm) & (-2u) : pc + 4; IF.occupied = true; break;
-        case BNE: PC = (rs1_val != rs2_val) ? (pc + (int)imm) & (-2u) : pc + 4; IF.occupied = true; break;
-        case BLT: PC = ((int)rs1_val < (int)rs2_val) ? (pc + (int)imm) & (-2u) : pc + 4; IF.occupied = true; break;
-        case BLTU: PC = (rs1_val < rs2_val) ? (pc + (int)imm) & (-2u) : pc + 4; IF.occupied = true; break;
-        case BGE: PC = ((int)rs1_val >= (int)rs2_val) ? (pc + (int)imm) & (-2u) : pc + 4; IF.occupied = true; break;
-        case BGEU: PC = (rs1_val >= rs2_val) ? (pc + (int)imm) & (-2u) : pc + 4; IF.occupied = true; break;
+        case JAL: _mem->rd_val = pc + 4; IF.pc = pc + (int)imm; IF.occupied = true; break;
+        case JALR: _mem->rd_val = pc + 4; IF.pc = (rs1_val + (int)imm) & (-2u); IF.occupied = true; break;
+        case BEQ: if (rs1_val == rs2_val) IF.pc =(pc + (int)imm) & (-2u); IF.occupied = true; break;
+        case BNE: if (rs1_val != rs2_val) IF.pc = (pc + (int)imm) & (-2u); IF.occupied = true; break;
+        case BLT: if ((int)rs1_val < (int)rs2_val) IF.pc = (pc + (int)imm) & (-2u); IF.occupied = true; break;
+        case BLTU: if (rs1_val < rs2_val) IF.pc = (pc + (int)imm) & (-2u); IF.occupied = true; break;
+        case BGE: if ((int)rs1_val >= (int)rs2_val) IF.pc = (pc + (int)imm) & (-2u); IF.occupied = true; break;
+        case BGEU: if (rs1_val >= rs2_val) IF.pc = (pc + (int)imm) & (-2u); IF.occupied = true; break;
         case LB: _mem->address = rs1_val + imm; break;
         case LBU: case LH: case LHU: case LW:
             _mem->address = rs1_val + imm; break;
@@ -170,7 +170,6 @@ void _MEM::op(_WB *_wb){
 void _WB::op(){
     if(!occupied) return;
     occupied = false;
-    reg_occupied[rd] = false;
     if(rd == 0) return;
     switch (type){
         case Null: break;
@@ -179,6 +178,7 @@ void _WB::op(){
         case LUI: case AUIPC:
         case JAL: case JALR:
         case LB: case LBU: case LH: case LHU: case LW:
+            reg_occupied[rd]--;
             _register[rd] = rd_val;
             break;
         default:

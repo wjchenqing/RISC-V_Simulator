@@ -57,12 +57,13 @@ class _MEM{
 public:
     bool occupied;
     ins_type type;
+    uint pc;
     uint address;
     uint val;
     uint rd_val;
     uint rd;
 public:
-    _MEM(): type(Null), address(0u), val(0u), rd_val(0u), rd(0u), occupied(false) {}
+    _MEM(): pc(0u), type(Null), address(0u), val(0u), rd_val(0u), rd(0u), occupied(false) {}
     void op(_WB *_wb);
 };
 
