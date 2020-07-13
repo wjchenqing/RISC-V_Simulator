@@ -34,12 +34,14 @@ void _ID::op(_EX *_ex){
     _ex->occupied = true; occupied = false;
     switch(cur._type){
         case Null: break;
-        case ADDI: case SLTI: case SLTIU: case XORI: case ORI:
+        case ADDI: case SLTI: case SLTIU: case XORI: case ORI: case ANDI:
             _ex->rs1_val = _register[cur.rs1]; _ex->imm = cur.imm; _ex->rd = cur.rd; break;
-        case ANDI: case SLLI: case SRLI: case SRAI:
+        case SLLI: case SRLI: case SRAI:
             _ex->rs1_val = _register[cur.rs1]; _ex->imm = cur.imm & 0x1fu; _ex->rd = cur.rd; break;
-        case ADD: case SUB: case SLT: case SLTU: case XOR: case SLL: case SRL: case SRA: case OR: case AND:
+        case ADD: case SUB: case SLT: case SLTU: case XOR: case OR: case AND:
             _ex->rs1_val = _register[cur.rs1]; _ex->rs2_val = _register[cur.rs2]; _ex->rd = cur.rd; break;
+        case SLL: case SRL: case SRA:
+            _ex->rs1_val = _register[cur.rs1]; _ex->rs2_val = _register[cur.rs2] & 31u; _ex->rd = cur.rd; break;
         case LUI:
             _ex->imm = cur.imm; _ex->type = cur._type; _ex->rd = cur.rd; break;
         case AUIPC:
@@ -93,8 +95,8 @@ void _EX::op(_MEM *_mem){
         case BNE: _mem->pc = (rs1_val != rs2_val) ? (pc + (int)imm) & (-2u) : pc + 4; break;
         case BLT: _mem->pc = ((int)rs1_val < (int)rs2_val) ? (pc + (int)imm) & (-2u) : pc + 4; break;
         case BLTU: _mem->pc = (rs1_val < rs2_val) ? (pc + (int)imm) & (-2u) : pc + 4; break;
-        case BGE: _mem->pc = ((int)rs1_val > (int)rs2_val) ? (pc + (int)imm) & (-2u) : pc + 4; break;
-        case BGEU: _mem->pc = (rs1_val > rs2_val) ? (pc + (int)imm) & (-2u) : pc + 4; break;
+        case BGE: _mem->pc = ((int)rs1_val >= (int)rs2_val) ? (pc + (int)imm) & (-2u) : pc + 4; break;
+        case BGEU: _mem->pc = (rs1_val >= rs2_val) ? (pc + (int)imm) & (-2u) : pc + 4; break;
         case LB: _mem->address = rs1_val + imm; break;
         case LBU: case LH: case LHU: case LW:
             _mem->address = rs1_val + imm; break;
