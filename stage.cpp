@@ -107,9 +107,14 @@ void _EX::op(_MEM *_mem){
             _mem->address = rs1_val + imm; _mem->val = rs2_val; break;
     }
 }
-
+int mem_cnt = 0;
 void _MEM::op(_WB *_wb){
     if(_wb->occupied || !occupied) return;
+    if(mem_cnt < 3) {
+        mem_cnt++;
+        return;
+    }
+    mem_cnt = 0;
     occupied = false;
     _wb->rd = rd;
     _wb->type = type;
@@ -118,10 +123,7 @@ void _MEM::op(_WB *_wb){
         case Null: break;
         case ADDI: case SLTI: case SLTIU: case XORI: case ORI: case ANDI: case SLLI: case SRLI: case SRAI:
         case ADD: case SUB: case SLT: case SLTU: case XOR: case SLL: case SRL: case SRA: case OR: case AND:
-        case LUI: case AUIPC:
-            _wb->rd_val = rd_val;
-            break;
-        case JAL: case JALR:
+        case LUI: case AUIPC: case JAL: case JALR:
             _wb->rd_val = rd_val;
             break;
         case BEQ: case BNE: case BLT: case BLTU: case BGE: case BGEU:
