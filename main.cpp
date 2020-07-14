@@ -6,7 +6,7 @@
 #include "stage.h"
 
 int main(){
-    freopen("../riscv-testcases/testcases/array_test1.data", "r", stdin);
+//    freopen(freopen"../riscv-testcases/testcases/array_test1.data", "r", stdin);
     char ini[10] = {0};
     int cur_mem = 0;
     while(scanf("%s", ini) != EOF){
