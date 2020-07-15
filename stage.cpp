@@ -21,16 +21,17 @@ void _IF::op(_ID *_id){
     uint tmp = 0u;
     tmp |= ((((uint)_memory[pc+3]) << 24u) | (((uint)_memory[pc+2]) << 16u) | (((uint)_memory[pc+1]) << 8u) | ((uint)_memory[pc]));
     _id->ins = tmp;
-    if(tmp == 0x0ff00513u) {
-        occupied = false;
-        return;
-    }
     pc += 4;
     _id->occupied = true;
 }
 
 void _ID::op(_EX *_ex){
     if(_ex->occupied || !occupied) return;
+    if(ins == 0x0ff00513u) {
+        occupied = false;
+        IF.occupied = false;
+        return;
+    }
     instruction cur(ins);
     if(cur.rs1 != 0u && reg_occupied[cur.rs1]) return;
     if(cur.rs2 != 0u && reg_occupied[cur.rs2]) return;
