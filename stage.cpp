@@ -12,6 +12,9 @@ _EX EX;
 _MEM MEM;
 _WB WB;
 
+int counter[64];
+int success = 0, total = 0;
+
 void _IF::op(_ID *_id){
     if(_id->occupied || !occupied) return;
     _id->pc = pc;
@@ -50,11 +53,16 @@ void _ID::op(_EX *_ex){
         case AUIPC:
             _ex->imm = cur.imm; _ex->rd = cur.rd; break;
         case JAL:
-            _ex->imm = cur.imm; _ex->rd = cur.rd; IF.occupied = false; break;
+            _ex->imm = cur.imm; _ex->rd = cur.rd; IF.pc = pc + (int)cur.imm; break;
         case JALR:
-            _ex->imm = cur.imm; _ex->rs1_val = _register[cur.rs1]; _ex->rd = cur.rd; IF.occupied = false; break;
+            _ex->imm = cur.imm; _ex->rs1_val = _register[cur.rs1]; _ex->rd = cur.rd; IF.pc = (_ex->rs1_val + (int)cur.imm) & (-2u); break;
         case BEQ: case BNE: case BLT: case BLTU: case BGE: case BGEU:
-            _ex->rs1_val = _register[cur.rs1]; _ex->rs2_val = _register[cur.rs2]; _ex->imm = cur.imm; IF.occupied = false; break;
+            _ex->rs1_val = _register[cur.rs1]; _ex->rs2_val = _register[cur.rs2]; _ex->imm = cur.imm;
+            predictor = counter[(pc >> 2u) & 63u] & 2u;
+            IF.pc = (predictor ? pc + (int)cur.imm : pc + 4);
+            _ex->predictor = predictor;
+            ++total;
+            break;
         case LB: case LBU: case LH: case LHU: case LW:
             _ex->rs1_val = _register[cur.rs1]; _ex->imm = cur.imm; _ex->rd = cur.rd; break;
         case SB: case SH: case SW:
@@ -92,14 +100,117 @@ void _EX::op(_MEM *_mem){
         case AND: _mem->rd_val = rs1_val & rs2_val; break;
         case LUI: _mem->rd_val = imm; break;
         case AUIPC: _mem->rd_val = imm + pc; break;
-        case JAL: _mem->rd_val = pc + 4; IF.pc = pc + (int)imm; IF.occupied = true; break;
-        case JALR: _mem->rd_val = pc + 4; IF.pc = (rs1_val + (int)imm) & (-2u); IF.occupied = true; break;
-        case BEQ: if (rs1_val == rs2_val) IF.pc =(pc + (int)imm) & (-2u); IF.occupied = true; break;
-        case BNE: if (rs1_val != rs2_val) IF.pc = (pc + (int)imm) & (-2u); IF.occupied = true; break;
-        case BLT: if ((int)rs1_val < (int)rs2_val) IF.pc = (pc + (int)imm) & (-2u); IF.occupied = true; break;
-        case BLTU: if (rs1_val < rs2_val) IF.pc = (pc + (int)imm) & (-2u); IF.occupied = true; break;
-        case BGE: if ((int)rs1_val >= (int)rs2_val) IF.pc = (pc + (int)imm) & (-2u); IF.occupied = true; break;
-        case BGEU: if (rs1_val >= rs2_val) IF.pc = (pc + (int)imm) & (-2u); IF.occupied = true; break;
+        case JAL: _mem->rd_val = pc + 4; break;
+        case JALR: _mem->rd_val = pc + 4; break;
+        case BEQ:
+            if (rs1_val == rs2_val) {
+                counter[(pc >> 2u) & 63u] = std::min(counter[(pc >> 2u) & 63u] + 1, 3);
+                if(predictor) {
+                    ++success;
+                } else{
+                    IF.pc =(pc + (int)imm) & (-2u);
+                    ID.occupied = false;
+                }
+            } else{
+                counter[(pc >> 2u) & 63u] = std::max(counter[(pc >> 2u) & 63u] - 1, 0);
+                if(!predictor) {
+                    ++success;
+                } else{
+                    IF.pc = pc + 4;
+                    ID.occupied = false;
+                }
+            }
+            break;
+        case BNE: if (rs1_val != rs2_val) {
+                counter[(pc >> 2u) & 63u] = std::min(counter[(pc >> 2u) & 63u] + 1, 3);
+                if(predictor) {
+                    ++success;
+                } else{
+                    IF.pc =(pc + (int)imm) & (-2u);
+                    ID.occupied = false;
+                }
+            } else{
+                counter[(pc >> 2u) & 63u] = std::max(counter[(pc >> 2u) & 63u] - 1, 0);
+                if(!predictor) {
+                    ++success;
+                } else{
+                    IF.pc = pc + 4;
+                    ID.occupied = false;
+                }
+            }
+            break;
+        case BLT: if ((int)rs1_val < (int)rs2_val) {
+                counter[(pc >> 2u) & 63u] = std::min(counter[(pc >> 2u) & 63u] + 1, 3);
+                if(predictor) {
+                    ++success;
+                } else{
+                    IF.pc =(pc + (int)imm) & (-2u);
+                    ID.occupied = false;
+                }
+            } else{
+                counter[(pc >> 2u) & 63u] = std::max(counter[(pc >> 2u) & 63u] - 1, 0);
+                if(!predictor) {
+                    ++success;
+                } else{
+                    IF.pc = pc + 4;
+                    ID.occupied = false;
+                }
+            }
+            break;
+        case BLTU: if (rs1_val < rs2_val) {
+                counter[(pc >> 2u) & 63u] = std::min(counter[(pc >> 2u) & 63u] + 1, 3);
+                if(predictor) {
+                    ++success;
+                } else{
+                    IF.pc =(pc + (int)imm) & (-2u);
+                    ID.occupied = false;
+                }
+            } else{
+                counter[(pc >> 2u) & 63u] = std::max(counter[(pc >> 2u) & 63u] - 1, 0);
+                if(!predictor) {
+                    ++success;
+                } else{
+                    IF.pc = pc + 4;
+                    ID.occupied = false;
+                }
+            }
+            break;
+        case BGE: if ((int)rs1_val >= (int)rs2_val) {
+                counter[(pc >> 2u) & 63u] = std::min(counter[(pc >> 2u) & 63u] + 1, 3);
+                if(predictor) {
+                    ++success;
+                } else{
+                    IF.pc =(pc + (int)imm) & (-2u);
+                    ID.occupied = false;
+                }
+            } else{
+                counter[(pc >> 2u) & 63u] = std::max(counter[(pc >> 2u) & 63u] - 1, 0);
+                if(!predictor) {
+                    ++success;
+                } else{
+                    IF.pc = pc + 4;
+                    ID.occupied = false;
+                }
+            }
+            break;
+        case BGEU: if (rs1_val >= rs2_val) {
+                counter[(pc >> 2u) & 63u] = std::min(counter[(pc >> 2u) & 63u] + 1, 3);
+                if(predictor) {
+                    ++success;
+                } else{
+                    IF.pc =(pc + (int)imm) & (-2u);
+                    ID.occupied = false;
+                }
+            } else{
+                counter[(pc >> 2u) & 63u] = std::max(counter[(pc >> 2u) & 63u] - 1, 0);
+                if(!predictor) {
+                    ++success;
+                } else{
+                    IF.pc = pc + 4;
+                    ID.occupied = false;
+                }
+            }
+            break;
         case LB: _mem->address = rs1_val + imm; break;
         case LBU: case LH: case LHU: case LW:
             _mem->address = rs1_val + imm; break;

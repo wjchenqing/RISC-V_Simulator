@@ -34,8 +34,9 @@ public:
     bool occupied;
     uint ins;
     uint pc;
+    int predictor;
 public:
-    _ID():ins(0u), pc(0u), occupied(false) {}
+    _ID():ins(0u), pc(0u), occupied(false), predictor(0){}
     void op(_EX *_ex);
 };
 
@@ -48,8 +49,9 @@ public:
     uint rs1_val;
     uint rs2_val;
     uint rd;
+    int predictor;
 public:
-    _EX(): pc(0u), type(Null), imm(0u), rs1_val(0u), rs2_val(0u), rd(0u), occupied(false) {}
+    _EX(): pc(0u), type(Null), imm(0u), rs1_val(0u), rs2_val(0u), rd(0u), occupied(false), predictor(0){}
     void op(_MEM *_mem);
 };
 
