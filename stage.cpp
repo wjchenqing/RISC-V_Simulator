@@ -38,17 +38,20 @@ void _ID::op(_EX *_ex){
     if(cur.rd != 0u) reg_occupied[cur.rd]++;
     _ex->type = cur._type;
     _ex->pc = pc;
-    _ex->occupied = true; occupied = false;
     switch(cur._type){
         case Null: break;
         case ADDI: case SLTI: case SLTIU: case XORI: case ORI: case ANDI:
-            _ex->rs1_val = _register[cur.rs1]; _ex->imm = cur.imm; _ex->rd = cur.rd; break;
+            _ex->rs1_val = _register[cur.rs1];
+            _ex->imm = cur.imm; _ex->rd = cur.rd; break;
         case SLLI: case SRLI: case SRAI:
-            _ex->rs1_val = _register[cur.rs1]; _ex->imm = cur.imm & 0x1fu; _ex->rd = cur.rd; break;
+            _ex->rs1_val = _register[cur.rs1];
+            _ex->imm = cur.imm & 0x1fu; _ex->rd = cur.rd; break;
         case ADD: case SUB: case SLT: case SLTU: case XOR: case OR: case AND:
-            _ex->rs1_val = _register[cur.rs1]; _ex->rs2_val = _register[cur.rs2]; _ex->rd = cur.rd; break;
+            _ex->rs1_val = _register[cur.rs1]; _ex->rs2_val = _register[cur.rs2];
+            _ex->rd = cur.rd; break;
         case SLL: case SRL: case SRA:
-            _ex->rs1_val = _register[cur.rs1]; _ex->rs2_val = _register[cur.rs2] & 31u; _ex->rd = cur.rd; break;
+            _ex->rs1_val = _register[cur.rs1]; _ex->rs2_val = _register[cur.rs2] & 31u;
+            _ex->rd = cur.rd; break;
         case LUI:
             _ex->imm = cur.imm; _ex->type = cur._type; _ex->rd = cur.rd; break;
         case AUIPC:
@@ -56,19 +59,25 @@ void _ID::op(_EX *_ex){
         case JAL:
             _ex->imm = cur.imm; _ex->rd = cur.rd; IF.pc = pc + (int)cur.imm; break;
         case JALR:
-            _ex->imm = cur.imm; _ex->rs1_val = _register[cur.rs1]; _ex->rd = cur.rd; IF.pc = (_ex->rs1_val + (int)cur.imm) & (-2u); break;
+            _ex->rs1_val = _register[cur.rs1];
+            _ex->imm = cur.imm;
+            _ex->rd = cur.rd; IF.pc = (_ex->rs1_val + (int)cur.imm) & (-2u); break;
         case BEQ: case BNE: case BLT: case BLTU: case BGE: case BGEU:
-            _ex->rs1_val = _register[cur.rs1]; _ex->rs2_val = _register[cur.rs2]; _ex->imm = cur.imm;
+            _ex->rs1_val = _register[cur.rs1]; _ex->rs2_val = _register[cur.rs2];
+            _ex->imm = cur.imm;
             predictor = counter[(pc >> 2u) & 63u] & 2u;
             IF.pc = (predictor ? pc + (int)cur.imm : pc + 4);
             _ex->predictor = predictor;
             ++total;
             break;
         case LB: case LBU: case LH: case LHU: case LW:
-            _ex->rs1_val = _register[cur.rs1]; _ex->imm = cur.imm; _ex->rd = cur.rd; break;
+            _ex->rs1_val = _register[cur.rs1];
+            _ex->imm = cur.imm; _ex->rd = cur.rd; break;
         case SB: case SH: case SW:
-            _ex->rs1_val = _register[cur.rs1]; _ex->rs2_val = _register[cur.rs2]; _ex->imm = cur.imm; break;
+            _ex->rs1_val = _register[cur.rs1]; _ex->rs2_val = _register[cur.rs2];
+            _ex->imm = cur.imm; break;
     }
+    _ex->occupied = true; occupied = false;
 }
 
 void _EX::op(_MEM *_mem){
@@ -218,6 +227,7 @@ void _EX::op(_MEM *_mem){
         case SB: case SH: case SW:
             _mem->address = rs1_val + imm; _mem->val = rs2_val; break;
     }
+    pc = imm = rs1_val = rs2_val = rd = 0u; type = Null;
 }
 int mem_cnt = 0;
 void _MEM::op(_WB *_wb){
@@ -279,6 +289,7 @@ void _MEM::op(_WB *_wb){
             memcpy(_memory + address, &val, sizeof(int));
             break;
     }
+    pc = address = val = rd = rd_val = 0u; type = Null;
 }
 
 void _WB::op(){
@@ -298,4 +309,5 @@ void _WB::op(){
         default:
             break;
     }
+    rd = rd_val = 0u; type = Null;
 }
